@@ -229,6 +229,9 @@ typedef enum X86Seg {
 #define CR0_AM_MASK  (1U << 18)
 #define CR0_PG_MASK  (1U << 31)
 
+#define CR3_LAM_U48  (1ULL << 61)
+#define CR3_LAM_U57  (1ULL << 62)
+
 #define CR4_VME_MASK  (1U << 0)
 #define CR4_PVI_MASK  (1U << 1)
 #define CR4_TSD_MASK  (1U << 2)
@@ -250,6 +253,7 @@ typedef enum X86Seg {
 #define CR4_SMEP_MASK   (1U << 20)
 #define CR4_SMAP_MASK   (1U << 21)
 #define CR4_PKE_MASK   (1U << 22)
+#define CR4_LAM_SUP    (1U << 28)
 
 #define DR6_BD          (1 << 13)
 #define DR6_BS          (1 << 14)
@@ -797,6 +801,8 @@ typedef uint64_t FeatureWordArray[FEATURE_WORDS];
 
 /* AVX512 BFloat16 Instruction */
 #define CPUID_7_1_EAX_AVX512_BF16       (1U << 5)
+/* Linear Address Masking */
+#define CPUID_7_1_EAX_LAM               (1U << 26)
 
 /* Packets which contain IP payload have LIP values */
 #define CPUID_14_0_ECX_LIP              (1U << 31)
@@ -1928,6 +1934,7 @@ bool x86_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
                       MMUAccessType access_type, int mmu_idx,
                       bool probe, uintptr_t retaddr);
 void x86_cpu_set_a20(X86CPU *cpu, int a20_state);
+vaddr x86_cpu_clean_addr(CPUState *cpu, vaddr addr);
 
 #ifndef CONFIG_USER_ONLY
 static inline int x86_asidx_from_attrs(CPUState *cs, MemTxAttrs attrs)
